@@ -10,21 +10,21 @@ void startGiro(int pvel);
 
 #ifdef PROCESSOS_MASTER
 
-int nciclos = 1;
+int nciclos = 5;
 int tempoH = 10;
-int velH = 150;
-int velL = 140;
+int velH = 90;
+int velL = 40;
 int tempoL = 3;
 
 void onRPM(int vel2, long tempo);
 
 void setToDefaults(){ 
   Serial.println("default: 3:10x3");  
-  nciclos = 1;
+  nciclos = 5;
   tempoH = 10;
   tempoL = 3;  
-  int velH = 150;
-  int velL = 140;      
+  velH = 90;
+  velL = 40;      
   lcd.setCursor(0,1);
   lcd.print("default: 1x10:3");      
   lcd.print(" ");   
@@ -79,7 +79,7 @@ void setAbortConfirmed()
       lcd.print("Clique para sair");    
       lcd.print(" ");       
       Serial.println("Interrompido");
-      onRPM(69,0);
+      onRPM(0,0);
       iCiclo = 0;
 }
 
@@ -105,7 +105,7 @@ int choice(char * msg, int position0)
 
 boolean ciclando()
 {
-     if(iCiclo==0){
+     if(iCiclo==0&&false){
          lcd.clear();  lcd.print ("Partindo ");  
          startGiro(150);
      }        
@@ -127,7 +127,7 @@ boolean ciclando()
         lcd.clear();  
         return false;
     }
-    onRPM(69,0);
+    onRPM(0,0);
     iCiclo = 0;
     return true;
 }

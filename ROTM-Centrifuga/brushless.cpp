@@ -4,10 +4,10 @@
 
 Servo esc;
 
-int throttlePin = 0;
+int pinomotor = 9;
 
-#define TROTTLEMIN   75
-#define TROTTLEMAX  170
+#define TROTTLEMIN   750   // 75
+#define TROTTLEMAX  2000   //  170
 
 void varia(int vel2);
 void pisca(int n);
@@ -16,12 +16,24 @@ void testaRPM(int vel, int vel2, long tempo);
 
 void setupBrushless()
 {
+    esc.attach(pinomotor);
+    esc.writeMicroseconds(TROTTLEMAX);
+    delay(4000);
+    esc.writeMicroseconds(TROTTLEMIN);
+    delay(4000);
+
+}
+
+
+void setupBrushlessOthon()
+{
     esc.attach(9);
     esc.write(TROTTLEMAX);
     delay(5000); // espera o ESC apitar
     esc.write(TROTTLEMIN);
     delay(1000); // espera o ESC apitar
 }
+
 void loopBrushless()
 {
 
@@ -34,14 +46,11 @@ void loopBrushless()
 
 
 
-int vel = TROTTLEMIN;
+int vel = 0;
 
 void onRPM(int vel2, long tempo)
 {
-      int deltaT = 30;
-      if (vel <= TROTTLEMIN){
-          deltaT = 150;
-      }
+      int deltaT = 15;//30;
       for(; vel<vel2;vel++){
           esc.write(vel);
           delay(deltaT); // 
@@ -63,21 +72,6 @@ void startGiro(int pvel)
           }
           delay(1000);
 }
-void testaRPM(int vel1, int vel2, long tempo)
-{
-      int deltaT = 1000*tempo;
-      vel = TROTTLEMIN;
-      for(vel=vel1; vel<vel2;vel++){
-          Serial.print(vel); 
-          esc.write(vel);
-          delay(deltaT); // espera o ESC apitar
-          Serial.print(" ... "); 
-          esc.write(70);
-          //delay(deltaT); // espera o ESC apitar
-      }
-
- //     Serial.println("..."); 
-}
 
 void varia(int vel2)
 {
@@ -97,10 +91,9 @@ void pisca(int n)
 {
       for(int i=0; i<n;i++){
               digitalWrite(LED_BUILTIN,HIGH);
-              delay(140); // espera o ESC apitar
+              delay(140); 
               digitalWrite(LED_BUILTIN,LOW);
-              delay(140); // espera o ESC apitar
+              delay(140); 
               }
-            
 }
   

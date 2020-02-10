@@ -23,8 +23,8 @@ void onRPM(int vel2, long tempo);
 
 void setup() 
 {
-      displayInit("Centrifuga BH", "Bom dia!");
       setupBrushless();
+      displayInit("Centrifuga BH", "Bom dia!");
       Serial.begin(115200);
       delay(200);
       Serial.println("\r\n\r\nCentrifuga BH");

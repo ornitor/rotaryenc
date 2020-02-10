@@ -104,55 +104,6 @@ void menu(char *title, char *itens[], int n)
         lcd.print("  ");   
 }
 
-void menu3(char *title, char *itens[], int n)
-{
-        if(posEncoder == encoder.getPosition()) 
-                return;
-        posEncoder = positivando(encoder.getPosition(), n);
-        encoder.setPosition(posEncoder);
-        int selected = posEncoder%n;
-        Serial.println(title);
-        lcd.setCursor(0,0);
-        lcd.print(title);
-        lcd.print("     ");
-        lcd.setCursor(0,1);
-
-        for(int i=0; i<n;i++){
-            if(selected == i)
-                  lcd.print("[");
-            else
-                  lcd.print(" ");
-            lcd.print(itens[i]);
-            if(selected == i)
-                  lcd.print("]");
-            else 
-                  lcd.print(" ");
-        }  
-        lcd.print("  ");   
-}
-
-void menu2(char *title, char *itens[], int n)
-{
-        if(posEncoder == encoder.getPosition()) 
-                return;
-        posEncoder = positivando(encoder.getPosition(), n);
-        encoder.setPosition(posEncoder);
-        int selected = posEncoder%n;
-        Serial.println(title);
-        for(int i=0; i<n;i++){
-            if(selected == i)
-                  Serial.print("[");
-            else
-                  Serial.print(" ");
-            Serial.print(itens[i]);
-            if(selected == i)
-                  Serial.print("]");
-            else 
-                  Serial.print(" ");
-        }  
-        Serial.println("");   
-}
-
 
 int positivando(int valor, int n)
 {
