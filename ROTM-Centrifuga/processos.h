@@ -5,26 +5,27 @@ void setEnded();
 void setAbortConfirmed();
 boolean ciclando();
 int choice(char * msg, int position0);
+int choice(char * msg, int position0, int delta, int minimo, int maximo);
 void testaRPM(int vel, int vel2, long tempo);
 void startGiro(int pvel);
 
 #ifdef PROCESSOS_MASTER
 
-int nciclos = 5;
+int nciclos = 1;
 int tempoH = 10;
-int velH = 90;
-int velL = 40;
+int velH = 150;
+int velL = 140;
 int tempoL = 3;
 
 void onRPM(int vel2, long tempo);
 
 void setToDefaults(){ 
   Serial.println("default: 3:10x3");  
-  nciclos = 5;
+  nciclos = 1;
   tempoH = 10;
   tempoL = 3;  
-  velH = 90;
-  velL = 40;      
+  int velH = 150;
+  int velL = 140;      
   lcd.setCursor(0,1);
   lcd.print("default: 1x10:3");      
   lcd.print(" ");   
@@ -34,9 +35,9 @@ void setToDefaults(){
 void programaEstagios()
 { 
       nciclos = choice("Quantos Ciclos",nciclos);
-      velH = choice("Veloc. rapida",velH );
+      velH = choice("Veloc. rapida",velH,100,100,3000 );
       tempoH = choice("Tempo rapido",tempoH);
-      velL = choice("Velocidade lenta",velL);
+      velL = choice("Velocidade lenta",velL,100,100,3000 );
       tempoL = choice("Tempo lento",tempoL);
       lcd.setCursor(0,1);
       lcd.print("Programado, OK!");    
@@ -79,7 +80,7 @@ void setAbortConfirmed()
       lcd.print("Clique para sair");    
       lcd.print(" ");       
       Serial.println("Interrompido");
-      onRPM(0,0);
+      onRPM(69,0);
       iCiclo = 0;
 }
 
@@ -91,7 +92,7 @@ int choice(char * msg, int position0)
       lcd.clear(); lcd.print(msg);
       lcd.setCursor(0,1); lcd.print(val);
       
-      while(!debounce(4)) 
+      while(!debounce(pinClick)) 
             if(val != encoder.getPosition()){
                   val = encoder.getPosition();
                   if (val <= 0 ){
@@ -103,9 +104,31 @@ int choice(char * msg, int position0)
       return encoder.getPosition();
 }
 
+int choice(char * msg, int position0, int delta, int minimo, int maximo)
+{
+      encoder.setPosition(position0);
+      int val = 1;
+      lcd.clear(); lcd.print(msg);
+      lcd.setCursor(0,1); lcd.print(val);
+      
+      while(!debounce(pinClick)) 
+            if(val != encoder.getPosition()){
+                  val = encoder.getPosition();
+                  if (val < minimo ){
+                      val = minimo;
+                      encoder.setPosition(val);
+                  }
+                  if (val > maximo ){
+                      val = maximo;
+                      encoder.setPosition(val);
+                  }
+                  lcd.setCursor(0,1); lcd.print(val*delta);lcd.print("         ");
+            }
+      return encoder.getPosition()*delta;
+}
 boolean ciclando()
 {
-     if(iCiclo==0&&false){
+     if(iCiclo==0){
          lcd.clear();  lcd.print ("Partindo ");  
          startGiro(150);
      }        
@@ -127,7 +150,7 @@ boolean ciclando()
         lcd.clear();  
         return false;
     }
-    onRPM(0,0);
+    onRPM(69,0);
     iCiclo = 0;
     return true;
 }

@@ -23,15 +23,19 @@ void onRPM(int vel2, long tempo);
 
 void setup() 
 {
-      setupBrushless();
       displayInit("Centrifuga BH", "Bom dia!");
+      setupBrushless();
       Serial.begin(115200);
       delay(200);
       Serial.println("\r\n\r\nCentrifuga BH");
       Serial.println("Bom dia!\r\n");
-      pinMode(4,INPUT_PULLUP);
+      pinMode(pinClick,INPUT_PULLUP);
       setupRotaryEncoder();
       posEncoder++;
+      pinMode(5, OUTPUT);
+      pinMode(6, OUTPUT);
+      pinMode(7, OUTPUT);
+      pinMode(8, OUTPUT);
       delay(2000);
 }
 
@@ -39,7 +43,7 @@ void loop()
 {
       if(gstate == ST_STANDBY){
           menu("Centrifuga BH", mainMenu , 3);
-          if (debounce(4)){
+          if (debounce(pinClick)){
               if( posEncoder%3 == 0)
                     gstate = ST_PROGRAMING;
               if(posEncoder%3 == 1)
@@ -51,7 +55,7 @@ void loop()
           }
       } else if (gstate == ST_PROGRAMING){
           menu("Programando", progMenu, 3 );
-          if (debounce(4)){
+          if (debounce(pinClick)){
               if(posEncoder%3 == 0)
                     setToDefaults();
               if( posEncoder%3 == 1)
@@ -68,14 +72,14 @@ void loop()
               gstate = ST_ENDED;  
               setEnded();
           }
-          else if (debounce(4)){
+          else if (debounce(pinClick)){
               gstate = ST_HALTED;  
               setHalted();
           }
          posEncoder++;
       }else if (gstate == ST_HALTED){
           menu("Tem certeza?", haltMenu,2 );
-          if (debounce(4)){
+          if (debounce(pinClick)){
               if(posEncoder%2 == 0)
                     gstate = ST_CYCLING;
               if(posEncoder%2 == 1){
@@ -86,7 +90,7 @@ void loop()
           }
       } else if (gstate == ST_ENDED){ 
          // nao tem menu, input é o click
-          if (debounce(4)){
+          if (debounce(pinClick)){
               gstate = ST_STANDBY;
               posEncoder++;                
           }
