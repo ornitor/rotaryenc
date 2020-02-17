@@ -1,8 +1,9 @@
 #include <Wire.h> 
-#include "Encoder.h"
 #include "LiquidCrystal_I2C.h" // Needed for operating the LCD screen
 #include "Arduino.h"
 #include <math.h>   // loads a library with more advanced math functions
+#include "config.h"
+#include "Encoder.h"
 
 #define SECS_PER_MIN  (60UL)
 #define SECS_PER_HOUR (3600UL)
@@ -15,6 +16,7 @@
 #define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)  
 
 LiquidCrystal_I2C lcd(0x3F,20,4);
+char buffer[17];
 
 String printDigits2(int digits){
   // utility function for digital clock display: prints colon and leading 0

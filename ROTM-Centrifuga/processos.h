@@ -1,3 +1,5 @@
+#include "config.h"
+
 void setToDefaults();
 void programaEstagios();
 void setHalted();
@@ -8,37 +10,36 @@ int choice(char * msg, int position0);
 int choice(char * msg, int position0, int delta, int minimo, int maximo);
 void testaRPM(int vel, int vel2, long tempo);
 void startGiro(int pvel);
+boolean onRPM(int vel2, long tempo);
+float g2Rpm(float ng);
 
 #ifdef PROCESSOS_MASTER
 
-int nciclos = 1;
-int tempoH = 10;
-int velH = 150;
-int velL = 140;
-int tempoL = 3;
+extern int vel;
 
-void onRPM(int vel2, long tempo);
+int nciclos = NCICLOS;
+int tempoH = TEMP_CI;
+int velH = VEL_CI;
+int velL = VEL_CII;
+int tempoL = TEMP_CII;
+
+
 
 void setToDefaults(){ 
-  Serial.println("default: 3:10x3");  
-  nciclos = 1;
-  tempoH = 10;
-  tempoL = 3;  
-  int velH = 150;
-  int velL = 140;      
-  lcd.setCursor(0,1);
-  lcd.print("default: 1x10:3");      
-  lcd.print(" ");   
-  delay(750);   
-}
+  nciclos = NCICLOS;
+  tempoH = TEMP_CI;
+  tempoL = TEMP_CII;  
+  velH = VEL_CI;
+  velL = VEL_CII;      
+  }
 
 void programaEstagios()
 { 
       nciclos = choice("Quantos Ciclos",nciclos);
-      velH = choice("Veloc. rapida",velH,100,100,3000 );
-      tempoH = choice("Tempo rapido",tempoH);
-      velL = choice("Velocidade lenta",velL,100,100,3000 );
-      tempoL = choice("Tempo lento",tempoL);
+      velH = choice("Fase I(em g)",velH ,100,1,30);
+      tempoH = choice("Tempo I(em min)",tempoH);
+      velL = choice("Fase II(em g)",velL,100,1,30);
+      tempoL = choice("Tempo II(em min)",tempoL);
       lcd.setCursor(0,1);
       lcd.print("Programado, OK!");    
       lcd.print("       ");  
@@ -80,7 +81,7 @@ void setAbortConfirmed()
       lcd.print("Clique para sair");    
       lcd.print(" ");       
       Serial.println("Interrompido");
-      onRPM(69,0);
+      onRPM(0,0);
       iCiclo = 0;
 }
 
@@ -88,7 +89,7 @@ void setAbortConfirmed()
 int choice(char * msg, int position0)
 {
       encoder.setPosition(position0);
-      int val = 1;
+      int val = encoder.getPosition();
       lcd.clear(); lcd.print(msg);
       lcd.setCursor(0,1); lcd.print(val);
       
@@ -106,11 +107,10 @@ int choice(char * msg, int position0)
 
 int choice(char * msg, int position0, int delta, int minimo, int maximo)
 {
-      encoder.setPosition(position0);
-      int val = 1;
+      encoder.setPosition(position0/delta);
+      int val = encoder.getPosition();
       lcd.clear(); lcd.print(msg);
-      lcd.setCursor(0,1); lcd.print(val);
-      
+      lcd.setCursor(0,1); lcd.print(val*delta);   
       while(!debounce(pinClick)) 
             if(val != encoder.getPosition()){
                   val = encoder.getPosition();
@@ -118,7 +118,7 @@ int choice(char * msg, int position0, int delta, int minimo, int maximo)
                       val = minimo;
                       encoder.setPosition(val);
                   }
-                  if (val > maximo ){
+                 if (val > maximo ){
                       val = maximo;
                       encoder.setPosition(val);
                   }
@@ -126,9 +126,10 @@ int choice(char * msg, int position0, int delta, int minimo, int maximo)
             }
       return encoder.getPosition()*delta;
 }
+
 boolean ciclando()
 {
-     if(iCiclo==0){
+     if(iCiclo==0&&false){
          lcd.clear();  lcd.print ("Partindo ");  
          startGiro(150);
      }        
@@ -138,25 +139,36 @@ boolean ciclando()
         lcd.print("/");  
         lcd.print(nciclos);  
         lcd.setCursor(0,1);   
+        lcd.print("1 ");  
         lcd.print(velH);  
         lcd.print("x");  
         lcd.print(tempoH);  
         lcd.print(" ");  
-        onRPM(velH,tempoH);
+        if(!onRPM(g2Rpm(velH),tempoH))
+            return false;
+        lcd.setCursor(0,1);   
+        lcd.print("2 ");  
         lcd.print(velL);  
         lcd.print("x");  
         lcd.print(tempoL);  
-        onRPM(velL,tempoL);
-        lcd.clear();  
+        lcd.print(" ");  
+        onRPM(g2Rpm(velL),tempoL);
         return false;
     }
-    onRPM(69,0);
+    onRPM(0,0);
     iCiclo = 0;
     return true;
 }
 
-extern int vel;
+float g2Rpm(float ng)
+{
+#define R 50.
+      float a = (120.-30.)/(7143. - 1188.);
+      float b = 30 - a*1188;
+      float f = sqrt(ng/(1.1178620909604E-06*R));
+      return a*f + b;
 
+}
 
 
 

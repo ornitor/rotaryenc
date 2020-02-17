@@ -6,6 +6,7 @@
 
 
 extern LiquidCrystal_I2C lcd;
+extern char buffer[];
 
 String time2(int val);
 void displayInit(char *title1, char *title2);

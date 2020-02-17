@@ -1,12 +1,12 @@
 #include <RotaryEncoder.h>
-#include <Arduino.h>
+#include "config.h"
 
-#define pinClick 0
+
+#define pinClick PINENC_SW
 
 #ifdef ENCODER_MAIN
-        RotaryEncoder encoder(12, 13);
+        RotaryEncoder encoder(PINENC_CLOCK, PINENC_DATA);
         int posEncoder = 0;
-        
 #else 
         extern  RotaryEncoder encoder;
         extern int posEncoder;
@@ -14,4 +14,5 @@
 
 void setupRotaryEncoder();
 int debounce(int pin);
+boolean onClick(int pin);
 int positivando(int valor, int n);

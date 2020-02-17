@@ -1,4 +1,5 @@
-
+// downloads
+#include "config.h"
 #include "Encoder.h"
 #include "display.h"
 #define PROCESSOS_MASTER
@@ -19,23 +20,15 @@ int gstate = ST_STANDBY;
 
 void menu(char *title, char *itens[], int n);
 void setupBrushless();
-void onRPM(int vel2, long tempo);
+boolean onRPM(int vel2, long tempo);
 
 void setup() 
 {
-      displayInit("Centrifuga BH", "Bom dia!");
       setupBrushless();
+      displayInit("Centrifuga BH", "Bom dia!");
       Serial.begin(115200);
-      delay(200);
-      Serial.println("\r\n\r\nCentrifuga BH");
-      Serial.println("Bom dia!\r\n");
-      pinMode(pinClick,INPUT_PULLUP);
       setupRotaryEncoder();
       posEncoder++;
-      pinMode(5, OUTPUT);
-      pinMode(6, OUTPUT);
-      pinMode(7, OUTPUT);
-      pinMode(8, OUTPUT);
       delay(2000);
 }
 
